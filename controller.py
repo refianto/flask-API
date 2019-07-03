@@ -20,28 +20,33 @@ def hello_world():
 	# 		result = {
 	# 		"message" : "data not found"
 	# 		}
+	try:
+		password = user(data['username'])
+		if data['password'] == password[0][0] :
+			sec = {
+			"username" : data['username'],
+			"password" : data['password']
+			}
 
-	password = user(str(data['username']))
-	if data['password'] in password[0] :
-		
-		sec = {
-		"username" : str(data['username']),
-		"password" : str(data['password'])
-		}
-
-		token = jwt.encode(sec, 'secret', algorithm='HS256')
-		
-		result = {
-		"message" : "success",
-		"status" : "200",
-		"data" : str(token)
-		}
-	else:
-		result = {
+			token = jwt.encode(sec, 'secret', algorithm='HS256')
+			
+			response = {
+			"message" : "success",
+			"status" : "200",
+			"data" : str(token)
+			}
+		else:
+			response = {
+			"message" : "data not found",
+			"status" : "404"
+			}
+	except:
+		response = {
 		"message" : "data not found",
 		"status" : "404"
 		}
-	return jsonify(result)
+
+	return jsonify(response)
 
 
 
@@ -89,8 +94,12 @@ def peminjamEdit():
 @app.route('/peminjam/delete/<id_peminjam>', methods=['GET'])
 def peminjamDelete(id_peminjam):
 
-	deletePeminjam(id_peminjam)
+	try:
+		cekPeminjam(id_peminjam)			
+	except:
+		return jsonify({"message" : "ID not found"})
 
+	deletePeminjam(id_peminjam)
 	response = {
 	"message" : "peminjam was deleted",
 	"id peminjam" : id_peminjam
@@ -148,6 +157,11 @@ def bukuEdit():
 @app.route('/buku/delete/<id_buku>', methods=['GET'])
 def bukuHapus(id_buku):
 
+	try:
+		cekBuku(id_buku)
+	except:
+		return jsonify({"message" : "ID not found"})
+
 	deleteBuku(id_buku)
 	response = {
 	"message" : "buku was deleted",
@@ -203,10 +217,15 @@ def peminjamanEdit():
 	}
 	return jsonify(response)
 
-@app.route('/peminjaman/delete/<id>', methods=['GET'])
-def peminjamanDelete(id):
+@app.route('/peminjaman/delete/<id_peminjaman>', methods=['GET'])
+def peminjamanDelete(id_peminjaman):
 	
-	deletePeminjaman(id)
+	try:
+		cekPeminjaman(id_peminjaman)
+	except:
+		return jsonify({"message" : "ID not found"})
+
+	deletePeminjaman(id_peminjaman)
 
 	response = {
 	"message" : "Peminjaman was deleted",
@@ -215,5 +234,5 @@ def peminjamanDelete(id):
 	return jsonify(response)
 
 # -------------- Dbug Mode = ON ------------------
-# if __name__ == '__main__':
-# 	app.run(debug=False)
+if __name__ == '__main__':
+	app.run()
